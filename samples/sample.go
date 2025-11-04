@@ -1,4 +1,4 @@
-﻿package samples
+package samples
 
 import "github.com/le-yams/gotestingmock"
 

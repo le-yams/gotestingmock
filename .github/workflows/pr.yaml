@@ -1,0 +1,51 @@
+name: Build PR
+
+on:
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: './go.mod'
+      - name: Build
+        run: go build -v ./...
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: './go.mod'
+      - name: Lint
+        uses: golangci/golangci-lint-action@v8
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: './go.mod'
+      - name: Testing
+        run: |
+          export GORACE="halt_on_error=1"
+          go test -race -covermode=atomic -coverprofile=coverage.out ./...
+      - name: Reporting coverage to Coveralls
+        uses: coverallsapp/github-action@v2
+        with:
+          file: ./coverage.out
+          format: golang
