@@ -1,4 +1,4 @@
-﻿package testingmock
+package testingmock
 
 import (
 	"fmt"
