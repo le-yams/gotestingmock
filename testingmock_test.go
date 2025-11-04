@@ -387,67 +387,23 @@ func Test_TestingMock_Should(t *testing.T) {
 		})
 	})
 
-	t.Run("delegate Cleanup() to the encapsulated testing.IT", func(t *testing.T) {
+	t.Run("provide GetCleanups() to return registered cleanups", func(t *testing.T) {
 		t.Parallel()
+
 		// Arrange
+		encapsulatedT := &testing.T{}
+		tMock := New(encapsulatedT)
 		i := 0
 
-		encapsulatedT := &cleanupTMock{}
-		tMock := New(encapsulatedT)
-
 		// Act
-		tMock.Cleanup(func() {
-			i++
-		})
+		tMock.Cleanup(func() { i += 4 })
+		tMock.Cleanup(func() { i -= 2 })
+		cleanups := tMock.GetCleanups()
+		for _, cleanup := range cleanups {
+			cleanup()
+		}
 
 		// Assert
-		assert.Len(t, encapsulatedT.cleanupCalls, 1)
-		encapsulatedT.cleanupCalls[0]()
-		assert.Equal(t, 1, i)
-		encapsulatedT.cleanupCalls[0]()
 		assert.Equal(t, 2, i)
 	})
-}
-
-type cleanupTMock struct {
-	cleanupCalls []func()
-}
-
-var _ IT = (*cleanupTMock)(nil)
-
-func (m *cleanupTMock) Cleanup(f func()) {
-	m.cleanupCalls = append(m.cleanupCalls, f)
-}
-
-func (m *cleanupTMock) Error(_ ...any) {
-	//no-op
-}
-
-func (m *cleanupTMock) Errorf(_ string, _ ...any) {
-	//no-op
-}
-
-func (m *cleanupTMock) Fatal(_ ...any) {
-	//no-op
-}
-
-func (m *cleanupTMock) Fatalf(_ string, _ ...any) {
-	//no-op
-}
-
-func (m *cleanupTMock) FailNow() {
-	//no-op
-}
-
-func (m *cleanupTMock) Log(_ ...any) {
-	//no-op
-}
-
-func (m *cleanupTMock) Logf(_ string, _ ...any) {
-	//no-op
-}
-
-func (m *cleanupTMock) Failed() bool {
-	//no-op
-	return false
 }
