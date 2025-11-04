@@ -7,6 +7,7 @@ import (
 )
 
 func Test_UtilityAssertionPassTestWhenConditionIsMet(t *testing.T) {
+	t.Parallel()
 	// Arrange
 	mockedT := testingmock.New(t)
 	util := NewTestingUtility(mockedT)
@@ -19,6 +20,7 @@ func Test_UtilityAssertionPassTestWhenConditionIsMet(t *testing.T) {
 }
 
 func Test_UtilityAssertionFailsTestWhenConditionIsNotMet(t *testing.T) {
+	t.Parallel()
 	mockedT := testingmock.New(t)
 
 	util := NewTestingUtility(mockedT)
