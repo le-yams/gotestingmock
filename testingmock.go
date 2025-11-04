@@ -31,9 +31,10 @@ var _ IT = (*MockedT)(nil)
 
 // MockedT is a mock implementation of IT that can be used to test fixtures and utilities.
 type MockedT struct {
-	t      IT
-	m      mock.Mock
-	assert *assert.Assertions
+	t        IT
+	m        mock.Mock
+	assert   *assert.Assertions
+	cleanups []func()
 }
 
 // New creates a new instance of MockedT.
@@ -49,6 +50,7 @@ func New(t IT) *MockedT {
 	mockedT.m.On("Fatalf", mock.Anything, mock.Anything).Return()
 	mockedT.m.On("FailNow").Return()
 	mockedT.m.On("Log", mock.Anything).Return()
+	mockedT.m.On("Logf", mock.Anything, mock.Anything).Return()
 
 	return mockedT
 }
@@ -115,9 +117,9 @@ func (testState *MockedT) Failed() bool {
 	return false
 }
 
-// Cleanup registers a cleanup function in underlying testing.T.
+// Cleanup mocked implementation.
 func (testState *MockedT) Cleanup(f func()) {
-	testState.t.Cleanup(f)
+	testState.cleanups = append(testState.cleanups, f)
 }
 
 // AssertDidNotFailed asserts that no failure methods were called.
@@ -168,6 +170,10 @@ func (testState *MockedT) AssertFailedWithFatalMessage(expectedMessage string) {
 // AssertFailNowHasBeenCalled asserts that FailNow was called.
 func (testState *MockedT) AssertFailNowHasBeenCalled() {
 	testState.m.AssertCalled(testState.t, "FailNow")
+}
+
+func (testState *MockedT) GetCleanups() []func() {
+	return append([]func(){}, testState.cleanups...)
 }
 
 type errorLevel int
