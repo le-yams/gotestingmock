@@ -23,7 +23,8 @@ func Test_TestingMock_Should(t *testing.T) {
 		// Arrange
 		tMock := New(t)
 		// Act
-		tMock.Error("an error occurred")
+		tMock.Error("an error occurred", "with args")
+		tMock.Error("another error occurred", "with", "more", "args")
 		// Assert
 		assert.True(t, tMock.Failed())
 	})
@@ -33,7 +34,7 @@ func Test_TestingMock_Should(t *testing.T) {
 		// Arrange
 		tMock := New(t)
 		// Act
-		tMock.Fatal("a fatal error occurred")
+		tMock.Fatal("a fatal error occurred", "with args")
 		// Assert
 		assert.True(t, tMock.Failed())
 	})
@@ -141,7 +142,7 @@ func Test_TestingMock_Should(t *testing.T) {
 				tMock := New(encapsulatedT)
 
 				// Act
-				tMock.Errorf("an error occurred")
+				tMock.Errorf("a %s error occurred %s", "formatted", "with multiple args")
 				tMock.AssertFailedWithError()
 
 				// Assert
@@ -185,7 +186,9 @@ func Test_TestingMock_Should(t *testing.T) {
 
 				// Act
 				tMock.Error("an error occurred")
+				tMock.Error("another error occurred", "with args")
 				tMock.AssertFailedWithErrorMessage("an error occurred")
+				tMock.AssertFailedWithErrorMessage("another error occurred with args")
 
 				// Assert
 				assert.False(t, encapsulatedT.Failed())
@@ -198,7 +201,9 @@ func Test_TestingMock_Should(t *testing.T) {
 
 				// Act
 				tMock.Errorf("an %s error occurred", "unexpected")
+				tMock.Errorf("another %s error %s occurred", "unexpected", "with more args")
 				tMock.AssertFailedWithErrorMessage("an unexpected error occurred")
+				tMock.AssertFailedWithErrorMessage("another unexpected error with more args occurred")
 
 				// Assert
 				assert.False(t, encapsulatedT.Failed())
@@ -231,62 +236,6 @@ func Test_TestingMock_Should(t *testing.T) {
 			})
 		})
 
-		t.Run("AssertFailedWithFatalMessage()", func(t *testing.T) {
-			t.Parallel()
-			t.Run("to not fail the encapsulated testing.IT when failed with Fatal() and the expected message", func(t *testing.T) {
-				t.Parallel()
-				// Arrange
-				encapsulatedT := &testing.T{}
-				tMock := New(encapsulatedT)
-
-				// Act
-				tMock.Fatal("an error occurred")
-				tMock.AssertFailedWithFatalMessage("an error occurred")
-
-				// Assert
-				assert.False(t, encapsulatedT.Failed())
-			})
-			t.Run("to not fail the encapsulated testing.IT when failed with Fatalf() and the expected message", func(t *testing.T) {
-				t.Parallel()
-				// Arrange
-				encapsulatedT := &testing.T{}
-				tMock := New(encapsulatedT)
-
-				// Act
-				tMock.Fatalf("an %s error occurred", "unexpected")
-				tMock.AssertFailedWithFatalMessage("an unexpected error occurred")
-
-				// Assert
-				assert.False(t, encapsulatedT.Failed())
-			})
-			t.Run("to fail the encapsulated testing.IT when it did not fail with Fatal() and the expected message", func(t *testing.T) {
-				t.Parallel()
-				// Arrange
-				encapsulatedT := &testing.T{}
-				tMock := New(encapsulatedT)
-
-				// Act
-				tMock.Fatal("an error occurred")
-				tMock.AssertFailedWithFatalMessage("another error occurred")
-
-				// Assert
-				assert.True(t, encapsulatedT.Failed())
-			})
-			t.Run("to fail the encapsulated testing.IT when it did not fail with Fatalf() and the expected message", func(t *testing.T) {
-				t.Parallel()
-				// Arrange
-				encapsulatedT := &testing.T{}
-				tMock2 := New(encapsulatedT)
-
-				// Act
-				tMock2.Fatalf("an %s error occurred", "unexpected")
-				tMock2.AssertFailedWithFatalMessage("another unexpected error occurred")
-
-				// Assert
-				assert.True(t, encapsulatedT.Failed())
-			})
-		})
-
 		t.Run("AssertFailedWithFatal()", func(t *testing.T) {
 			t.Parallel()
 			t.Run("to not fail the encapsulated testing.IT when failed with Fatal()", func(t *testing.T) {
@@ -309,7 +258,7 @@ func Test_TestingMock_Should(t *testing.T) {
 				tMock := New(encapsulatedT)
 
 				// Act
-				tMock.Fatalf("a fatal error occurred")
+				tMock.Fatalf("a %s error occurred %s", "fatal", "with multiple args")
 				tMock.AssertFailedWithFatal()
 
 				// Assert
@@ -337,6 +286,66 @@ func Test_TestingMock_Should(t *testing.T) {
 
 				// Act
 				tMock.AssertFailedWithFatal()
+
+				// Assert
+				assert.True(t, encapsulatedT.Failed())
+			})
+		})
+
+		t.Run("AssertFailedWithFatalMessage()", func(t *testing.T) {
+			t.Parallel()
+			t.Run("to not fail the encapsulated testing.IT when failed with Fatal() and the expected message", func(t *testing.T) {
+				t.Parallel()
+				// Arrange
+				encapsulatedT := &testing.T{}
+				tMock := New(encapsulatedT)
+
+				// Act
+				tMock.Fatal("an error occurred")
+				tMock.Fatal("another error occurred", "with args")
+				tMock.AssertFailedWithFatalMessage("an error occurred")
+				tMock.AssertFailedWithFatalMessage("another error occurred with args")
+
+				// Assert
+				assert.False(t, encapsulatedT.Failed())
+			})
+			t.Run("to not fail the encapsulated testing.IT when failed with Fatalf() and the expected message", func(t *testing.T) {
+				t.Parallel()
+				// Arrange
+				encapsulatedT := &testing.T{}
+				tMock := New(encapsulatedT)
+
+				// Act
+				tMock.Fatalf("an %s error occurred", "unexpected")
+				tMock.Fatalf("another %s error %s occurred", "unexpected", "with more args")
+				tMock.AssertFailedWithFatalMessage("an unexpected error occurred")
+				tMock.AssertFailedWithFatalMessage("another unexpected error with more args occurred")
+
+				// Assert
+				assert.False(t, encapsulatedT.Failed())
+			})
+			t.Run("to fail the encapsulated testing.IT when it did not fail with Fatal() and the expected message", func(t *testing.T) {
+				t.Parallel()
+				// Arrange
+				encapsulatedT := &testing.T{}
+				tMock := New(encapsulatedT)
+
+				// Act
+				tMock.Fatal("an error occurred")
+				tMock.AssertFailedWithFatalMessage("another error occurred")
+
+				// Assert
+				assert.True(t, encapsulatedT.Failed())
+			})
+			t.Run("to fail the encapsulated testing.IT when it did not fail with Fatalf() and the expected message", func(t *testing.T) {
+				t.Parallel()
+				// Arrange
+				encapsulatedT := &testing.T{}
+				tMock2 := New(encapsulatedT)
+
+				// Act
+				tMock2.Fatalf("an %s error occurred", "unexpected")
+				tMock2.AssertFailedWithFatalMessage("another unexpected error occurred")
 
 				// Assert
 				assert.True(t, encapsulatedT.Failed())

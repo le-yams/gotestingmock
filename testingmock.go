@@ -44,19 +44,14 @@ func New(t IT) *MockedT {
 		assert: assert.New(t),
 	}
 
-	mockedT.m.On("Error", mock.Anything).Return()
-	mockedT.m.On("Errorf", mock.Anything, mock.Anything).Return()
-	mockedT.m.On("Fatal", mock.Anything).Return()
-	mockedT.m.On("Fatalf", mock.Anything, mock.Anything).Return()
 	mockedT.m.On("FailNow").Return()
-	mockedT.m.On("Log", mock.Anything).Return()
-	mockedT.m.On("Logf", mock.Anything, mock.Anything).Return()
 
 	return mockedT
 }
 
 // Error mocked implementation.
 func (testState *MockedT) Error(args ...any) {
+	testState.m.On("Error", args...).Return()
 	_ = testState.m.Called(args...)
 	_ = args
 }
@@ -66,11 +61,13 @@ func (testState *MockedT) Errorf(format string, args ...any) {
 	allArgs := make([]any, 0, 1+len(args))
 	allArgs = append(allArgs, format)
 	allArgs = append(allArgs, args...)
+	testState.m.On("Errorf", allArgs...).Return()
 	_ = testState.m.Called(allArgs...)
 }
 
 // Fatal mocked implementation.
 func (testState *MockedT) Fatal(args ...any) {
+	testState.m.On("Fatal", args...).Return()
 	_ = testState.m.Called(args...)
 	_ = args
 }
@@ -80,6 +77,7 @@ func (testState *MockedT) Fatalf(format string, args ...any) {
 	allArgs := make([]any, 0, 1+len(args))
 	allArgs = append(allArgs, format)
 	allArgs = append(allArgs, args...)
+	testState.m.On("Fatalf", allArgs...).Return()
 	_ = testState.m.Called(allArgs...)
 }
 
@@ -90,6 +88,7 @@ func (testState *MockedT) FailNow() {
 
 // Log mocked implementation.
 func (testState *MockedT) Log(args ...any) {
+	testState.m.On("Log", args...).Return()
 	_ = testState.m.Called(args...)
 }
 
@@ -98,6 +97,7 @@ func (testState *MockedT) Logf(format string, args ...any) {
 	allArgs := make([]any, 0, 1+len(args))
 	allArgs = append(allArgs, format)
 	allArgs = append(allArgs, args...)
+	testState.m.On("logf", allArgs...).Return()
 	_ = testState.m.Called(allArgs...)
 }
 
@@ -125,9 +125,9 @@ func (testState *MockedT) Cleanup(f func()) {
 // AssertDidNotFailed asserts that no failure methods were called.
 func (testState *MockedT) AssertDidNotFailed() {
 	testState.m.AssertNotCalled(testState.t, "Error", mock.Anything)
-	testState.m.AssertNotCalled(testState.t, "Errorf", mock.Anything, mock.Anything)
+	testState.m.AssertNotCalled(testState.t, "Errorf", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything)
 	testState.m.AssertNotCalled(testState.t, "Fatal", mock.Anything)
-	testState.m.AssertNotCalled(testState.t, "Fatalf", mock.Anything, mock.Anything)
+	testState.m.AssertNotCalled(testState.t, "Fatalf", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything)
 	testState.m.AssertNotCalled(testState.t, "FailNow")
 }
 
