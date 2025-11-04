@@ -11,3 +11,13 @@
 A Go library providing mock utilities in order to test your testing libraries.
 
 See [samples](./samples) for usage examples.
+
+
+## Features
+
+* mock `*testing.T` through designed interface
+* make assertions for `*testing.T` methods calls 
+  * Error, Errorf
+  * Fatal, Fatalf
+  * FailNow
+* retrieve register cleanup functions
