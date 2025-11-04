@@ -1,0 +1,26 @@
+# Changelog
+
+## 1.0.0 (2025-11-04)
+
+
+### Features
+
+* retrieve registered cleanups ([de933f3](https://github.com/le-yams/gotestingmock/commit/de933f326b7e9dee97cd2b77e31e9700d33ac0e4))
+* testing.T interface and mock ([7847387](https://github.com/le-yams/gotestingmock/commit/78473875607503954756a186d76c41899e86d64b))
+
+
+### Bug Fixes
+
+* lint errors ([5e20757](https://github.com/le-yams/gotestingmock/commit/5e207574a1aef5d1b53844abe8c81f297f20716b))
+
+
+### Other
+
+* gofmt ([442278c](https://github.com/le-yams/gotestingmock/commit/442278c6c50e50fd434a16dc9bbb2928253d3353))
+
+
+### Docs
+
+* add documentation comments ([de1732a](https://github.com/le-yams/gotestingmock/commit/de1732a84db0ea44ba188323e729816d4d5bac32))
+* readme ([b3f5e36](https://github.com/le-yams/gotestingmock/commit/b3f5e36858f165612bac48b42405ec22d996e4dd))
+* readme badges ([7547df2](https://github.com/le-yams/gotestingmock/commit/7547df2ba1ec3229045327f5e9efb34180a6d4c2))
