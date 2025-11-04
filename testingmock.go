@@ -29,12 +29,14 @@ var _ assert.TestingT = (IT)(nil)
 var _ mock.TestingT = (IT)(nil)
 var _ IT = (*MockedT)(nil)
 
+// MockedT is a mock implementation of IT that can be used to test fixtures and utilities.
 type MockedT struct {
 	t      IT
 	m      mock.Mock
 	assert *assert.Assertions
 }
 
+// New creates a new instance of MockedT.
 func New(t IT) *MockedT {
 	mockedT := &MockedT{
 		t:      t,
@@ -51,18 +53,13 @@ func New(t IT) *MockedT {
 	return mockedT
 }
 
-type errorLevel int
-
-const (
-	levelError errorLevel = 0
-	levelFatal errorLevel = 1
-)
-
+// Error mocked implementation.
 func (testState *MockedT) Error(args ...any) {
 	_ = testState.m.Called(args...)
 	_ = args
 }
 
+// Errorf mocked implementation.
 func (testState *MockedT) Errorf(format string, args ...any) {
 	allArgs := make([]any, 0, 1+len(args))
 	allArgs = append(allArgs, format)
@@ -70,6 +67,13 @@ func (testState *MockedT) Errorf(format string, args ...any) {
 	_ = testState.m.Called(allArgs...)
 }
 
+// Fatal mocked implementation.
+func (testState *MockedT) Fatal(args ...any) {
+	_ = testState.m.Called(args...)
+	_ = args
+}
+
+// Fatalf mocked implementation.
 func (testState *MockedT) Fatalf(format string, args ...any) {
 	allArgs := make([]any, 0, 1+len(args))
 	allArgs = append(allArgs, format)
@@ -77,19 +81,17 @@ func (testState *MockedT) Fatalf(format string, args ...any) {
 	_ = testState.m.Called(allArgs...)
 }
 
-func (testState *MockedT) Fatal(args ...any) {
-	_ = testState.m.Called(args...)
-	_ = args
-}
-
+// FailNow mocked implementation.
 func (testState *MockedT) FailNow() {
 	_ = testState.m.Called()
 }
 
+// Log mocked implementation.
 func (testState *MockedT) Log(args ...any) {
 	_ = testState.m.Called(args...)
 }
 
+// Logf mocked implementation.
 func (testState *MockedT) Logf(format string, args ...any) {
 	allArgs := make([]any, 0, 1+len(args))
 	allArgs = append(allArgs, format)
@@ -97,6 +99,7 @@ func (testState *MockedT) Logf(format string, args ...any) {
 	_ = testState.m.Called(allArgs...)
 }
 
+// Failed mocked implementation.
 func (testState *MockedT) Failed() bool {
 	for _, call := range testState.m.Calls {
 		if slices.Contains([]string{
@@ -109,14 +112,15 @@ func (testState *MockedT) Failed() bool {
 			return true
 		}
 	}
-
 	return false
 }
 
+// Cleanup registers a cleanup function in underlying testing.T.
 func (testState *MockedT) Cleanup(f func()) {
 	testState.t.Cleanup(f)
 }
 
+// AssertDidNotFailed asserts that no failure methods were called.
 func (testState *MockedT) AssertDidNotFailed() {
 	testState.m.AssertNotCalled(testState.t, "Error", mock.Anything)
 	testState.m.AssertNotCalled(testState.t, "Errorf", mock.Anything, mock.Anything)
@@ -125,6 +129,7 @@ func (testState *MockedT) AssertDidNotFailed() {
 	testState.m.AssertNotCalled(testState.t, "FailNow")
 }
 
+// AssertFailedWithError asserts that an error method (Error, Errorf) was called.
 func (testState *MockedT) AssertFailedWithError() {
 	for _, call := range testState.m.Calls {
 		if call.Method == "Error" || call.Method == "Errorf" {
@@ -134,6 +139,7 @@ func (testState *MockedT) AssertFailedWithError() {
 	testState.t.Error("an error was expected to occur but did not")
 }
 
+// AssertFailedWithErrorMessage asserts that an error method (Error, Errorf) was called with the expected message.
 func (testState *MockedT) AssertFailedWithErrorMessage(expectedMessage string) {
 	call := testState.findErrorCallWithMessage(levelError, expectedMessage)
 	if call == nil {
@@ -141,6 +147,7 @@ func (testState *MockedT) AssertFailedWithErrorMessage(expectedMessage string) {
 	}
 }
 
+// AssertFailedWithFatal asserts that a fatal method (Fatal, Fatalf) was called.
 func (testState *MockedT) AssertFailedWithFatal() {
 	for _, call := range testState.m.Calls {
 		if call.Method == "Fatal" || call.Method == "Fatalf" {
@@ -150,6 +157,7 @@ func (testState *MockedT) AssertFailedWithFatal() {
 	testState.t.Error("a fatal was expected to occur but did not")
 }
 
+// AssertFailedWithFatalMessage asserts that a fatal method (Fatal, Fatalf) was called with the expected message.
 func (testState *MockedT) AssertFailedWithFatalMessage(expectedMessage string) {
 	call := testState.findErrorCallWithMessage(levelFatal, expectedMessage)
 	if call == nil {
@@ -157,9 +165,17 @@ func (testState *MockedT) AssertFailedWithFatalMessage(expectedMessage string) {
 	}
 }
 
+// AssertFailNowHasBeenCalled asserts that FailNow was called.
 func (testState *MockedT) AssertFailNowHasBeenCalled() {
 	testState.m.AssertCalled(testState.t, "FailNow")
 }
+
+type errorLevel int
+
+const (
+	levelError errorLevel = 0
+	levelFatal errorLevel = 1
+)
 
 func (testState *MockedT) findErrorCallWithMessage(level errorLevel, expectedMessage string) *mock.Call {
 	m1 := "Error"
