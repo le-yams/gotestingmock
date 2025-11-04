@@ -24,3 +24,26 @@ jobs:
           manifest-file: .release/release-please-manifest.json
       - name: Refresh Go Report Card
         uses: creekorful/goreportcard-action@v1.0
+    outputs:
+      releases_created: ${{ steps.release.outputs.releases_created }}
+
+  test-coverage-report:
+    needs:
+      - release-please
+    if: needs.release-please.outputs.releases_created == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: './go.mod'
+      - name: Testing
+        run: |
+          go test -covermode=atomic -coverprofile=coverage.out ./...
+      - name: Reporting coverage to Coveralls
+        uses: coverallsapp/github-action@v2
+        with:
+          file: ./coverage.out
+          format: golang
