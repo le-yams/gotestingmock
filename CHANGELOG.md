@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/le-yams/gotestingmock/compare/v1.0.0...v1.0.1) (2025-11-04)
+
+
+### Bug Fixes
+
+* variadic methods mocking ([46149a8](https://github.com/le-yams/gotestingmock/commit/46149a8eb032b8aa086d32d3d907405fcd0ab580))
+
 ## 1.0.0 (2025-11-04)
 
 
